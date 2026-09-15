@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>TechnoVerseLoader</RootNamespace>
+    <AssemblyName>TechnoVerseLoader</AssemblyName>
+    
+    <!-- Application Icon -->
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+
+    <!-- Single File options -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <Company>TechnoVerse</Company>
+    <Product>TechnoVerse Client Loader</Product>
+    <Description>TechnoVerse Client Loader</Description>
+
+    <!-- Suppress WinForms .NET 10 designer warnings -->
+    <NoWarn>$(NoWarn);WFO1000;WFO0003;CS8765</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="9.0.2" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,305 @@
+{
+  "tickets": [],
+  "backups": [],
+  "transcripts": [],
+  "products": [
+    {
+      "id": "emulator-no-restart",
+      "name": "Emulator No Restart",
+      "emoji": "🔥",
+      "color": "#7b2cbf",
+      "description": "Giả lập không cần khởi động lại, mượt mà và ổn định.",
+      "features": [
+        "Bypasses TPM, Secure Boot, and HVCI Restrictions & VAN 152/5",
+        "One-Click Vanguard Emulation",
+        "No Game or System Restart Required",
+        "No BIOS Flashing or Windows Reinstallation Needed",
+        "Unique Builds Per User"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "50.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "150.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "400.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "1.200.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "emulator-restart",
+      "name": "Emulator Restart",
+      "emoji": "🔄",
+      "color": "#7b2cbf",
+      "description": "Giả lập với tính năng restart tự động.",
+      "features": [
+        "Bypasses TPM, Secure Boot, and HVCI Restrictions",
+        "Auto Restart Configuration",
+        "No Windows Reinstallation Needed",
+        "Supports All Windows 10 & 11"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "40.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "120.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "350.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "1.000.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "triggerbot",
+      "name": "Triggerbot",
+      "emoji": "🎯",
+      "color": "#7b2cbf",
+      "description": "Triggerbot tự động bắn chính xác.",
+      "features": [
+        "Pixel-Based Detection Engine",
+        "Customizable Delay & Smoothing",
+        "Bypass All Anti-Cheats (Kernel Level)",
+        "Supports Fullscreen & Windowed Mode"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "20.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "60.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "150.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "300.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "coloraim-all-mouse",
+      "name": "ColorAim All Mouse",
+      "emoji": "🎨",
+      "color": "#7b2cbf",
+      "description": "ColorAim hỗ trợ tất cả loại chuột.",
+      "features": [
+        "Works with All Mouse Brands (Logitech, Razer, SteelSeries)",
+        "Smooth Aim & Humanized Movement",
+        "Undetected Memory-less Technology",
+        "Customizable Aim Keys & FOV"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "35.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "100.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "250.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "500.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "web-radar",
+      "name": "Web Radar",
+      "emoji": "📡",
+      "color": "#7b2cbf",
+      "description": "Radar trực tuyến, theo dõi vị trí địch.",
+      "features": [
+        "Share Live Radar via Web Browser with Teammates",
+        "No Software Installation on Main PC",
+        "2D Map with Real-time Player Locations",
+        "100% Ban Proof Architecture"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "60.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "180.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "500.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "1.500.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "spoofer",
+      "name": "Spoofer",
+      "emoji": "🛡️",
+      "color": "#7b2cbf",
+      "description": "Spoof thông tin thiết bị, bảo mật tài khoản.",
+      "features": [
+        "Spoofs Motherboard, Disk, MAC, GPU & BIOS Serial Numbers",
+        "Perm Spoofer & Temp Spoofer Supported",
+        "Cleans All Game Traces & Residual Files",
+        "Supports Intel & AMD CPUs"
+      ],
+      "pricing": [
+        {
+          "label": "1 Lần Key",
+          "value": "one_time",
+          "price": "150.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "internal-vip",
+      "name": "Internal VIP",
+      "emoji": "👑",
+      "color": "#7b2cbf",
+      "description": "Bản hack Internal VIP cao cấp đầy đủ tính năng.",
+      "features": [
+        "Aimbot & Triggerbot: Pixel Silent, 360° FOV, Smooth Aim, Recoil Control",
+        "Anti-Aim: Server-Side Anti-Aim với Pitch, Spin tùy chỉnh",
+        "ESP & Visuals: 2D/3D Box, Skeleton, Health Bar, Distance, Snaplines",
+        "Chams: Player/Gun/Hand Chams (Glass, Glow, Neon)",
+        "Exploits & Misc: Viewmodel, FOV, Aspect Ratio Changer"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "50.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "150.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "500.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "1.000.000 VNĐ"
+        }
+      ]
+    },
+    {
+      "id": "popup-bypass",
+      "name": "Popup Bypass",
+      "emoji": "⚡",
+      "color": "#7b2cbf",
+      "description": "Vượt popup cảnh báo và bảo vệ tài khoản an toàn.",
+      "features": [
+        "Bypasses Valorant Warning & Security Popups",
+        "Undetected Kernel-Level Bypass Engine",
+        "Compatible with All Windows 10 & 11",
+        "One-Click Activation & Auto-Restore"
+      ],
+      "pricing": [
+        {
+          "label": "1 Day Key",
+          "value": "daily",
+          "emoji": "📅",
+          "price": "30.000 VNĐ"
+        },
+        {
+          "label": "1 Week Key",
+          "value": "weekly",
+          "emoji": "📆",
+          "price": "90.000 VNĐ"
+        },
+        {
+          "label": "1 Month Key",
+          "value": "monthly",
+          "emoji": "🗓️",
+          "price": "250.000 VNĐ"
+        },
+        {
+          "label": "Lifetime Key",
+          "value": "lifetime",
+          "emoji": "♾️",
+          "price": "600.000 VNĐ"
+        }
+      ]
+    }
+  ],
+  "invoices": [],
+  "hwidResets": [],
+  "onlineAccounts": []
+}
