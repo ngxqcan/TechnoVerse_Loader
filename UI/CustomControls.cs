@@ -303,4 +303,225 @@ namespace TechnoVerseLoader.UI
             g.DrawPath(pen, path);
         }
     }
+
+    public class DarkMenuColorTable : ProfessionalColorTable
+    {
+        public override Color ToolStripDropDownBackground => Color.FromArgb(24, 19, 42);
+        public override Color ImageMarginGradientBegin => Color.FromArgb(24, 19, 42);
+        public override Color ImageMarginGradientMiddle => Color.FromArgb(24, 19, 42);
+        public override Color ImageMarginGradientEnd => Color.FromArgb(24, 19, 42);
+        public override Color MenuBorder => Theme.BorderActive;
+        public override Color MenuItemBorder => Color.Transparent;
+        public override Color MenuItemSelected => Theme.Primary;
+        public override Color MenuItemSelectedGradientBegin => Theme.Primary;
+        public override Color MenuItemSelectedGradientEnd => Theme.Primary;
+        public override Color MenuItemPressedGradientBegin => Theme.PrimaryActive;
+        public override Color MenuItemPressedGradientEnd => Theme.PrimaryActive;
+    }
+
+    public class DarkMenuRenderer : ToolStripProfessionalRenderer
+    {
+        public DarkMenuRenderer() : base(new DarkMenuColorTable()) { }
+
+        protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+        {
+            if (e.Item.Selected)
+            {
+                using var brush = new SolidBrush(Theme.Primary);
+                e.Graphics.FillRectangle(brush, new Rectangle(2, 1, e.Item.Width - 4, e.Item.Height - 2));
+            }
+            else
+            {
+                using var brush = new SolidBrush(Color.FromArgb(24, 19, 42));
+                e.Graphics.FillRectangle(brush, new Rectangle(0, 0, e.Item.Width, e.Item.Height));
+            }
+        }
+
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+        {
+            e.TextColor = Theme.TextWhite;
+            base.OnRenderItemText(e);
+        }
+
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+        {
+            using var pen = new Pen(Theme.BorderActive, 1.2f);
+            e.Graphics.DrawRectangle(pen, 0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
+        }
+    }
+
+    public class CyberDropdown : Control
+    {
+        private readonly List<string> _items = new();
+        private int _selectedIndex = 0;
+        private bool _isHovered = false;
+        private readonly ContextMenuStrip _menu;
+
+        public event EventHandler? SelectedIndexChanged;
+
+        public Color BorderColor { get; set; } = Theme.Border;
+        public Color BorderHoverColor { get; set; } = Theme.BorderActive;
+        public Color FillColor { get; set; } = Color.FromArgb(28, 22, 48);
+        public Color FillHoverColor { get; set; } = Color.FromArgb(38, 30, 64);
+        public Color ArrowColor { get; set; } = Theme.CosmicViolet;
+        public int BorderRadius { get; set; } = 6;
+
+        public IList<string> Items => _items;
+
+        public int SelectedIndex
+        {
+            get => _selectedIndex;
+            set
+            {
+                if (value >= 0 && value < _items.Count && _selectedIndex != value)
+                {
+                    _selectedIndex = value;
+                    Invalidate();
+                    SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        public string SelectedText => _items.Count > 0 && _selectedIndex >= 0 && _selectedIndex < _items.Count
+            ? _items[_selectedIndex]
+            : "";
+
+        public CyberDropdown()
+        {
+            SetStyle(ControlStyles.AllPaintingInWmPaint |
+                     ControlStyles.UserPaint |
+                     ControlStyles.OptimizedDoubleBuffer |
+                     ControlStyles.ResizeRedraw |
+                     ControlStyles.SupportsTransparentBackColor, true);
+
+            BackColor = Color.Transparent;
+            Size = new Size(100, 24);
+            Cursor = Cursors.Hand;
+            Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+            ForeColor = Theme.TextWhite;
+
+            _menu = new ContextMenuStrip
+            {
+                ShowImageMargin = false,
+                ShowCheckMargin = false,
+                BackColor = Color.FromArgb(24, 19, 42),
+                ForeColor = Theme.TextWhite,
+                Font = new Font("Segoe UI", 8.5F, FontStyle.Bold),
+                Renderer = new DarkMenuRenderer(),
+                DropShadowEnabled = false
+            };
+        }
+
+        public void RebuildMenu()
+        {
+            _menu.Items.Clear();
+            for (int i = 0; i < _items.Count; i++)
+            {
+                int idx = i;
+                var item = new ToolStripMenuItem(_items[i])
+                {
+                    ForeColor = Theme.TextWhite,
+                    Height = 24,
+                    Padding = new Padding(8, 3, 8, 3),
+                    Font = new Font("Segoe UI", 8.5F, FontStyle.Bold)
+                };
+                item.Click += (s, e) =>
+                {
+                    SelectedIndex = idx;
+                };
+                _menu.Items.Add(item);
+            }
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            base.OnMouseEnter(e);
+            _isHovered = true;
+            Invalidate();
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+            _isHovered = false;
+            Invalidate();
+        }
+
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            base.OnMouseClick(e);
+            if (e.Button == MouseButtons.Left && _items.Count > 0)
+            {
+                RebuildMenu();
+                _menu.MinimumSize = new Size(Width, 0);
+                _menu.Show(this, new Point(0, Height + 2));
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+            // Xóa sạch nền bằng màu nền thực sự của CardPanel cha (loại bỏ hoàn toàn vệt trắng 4 góc bo)
+            Color parentBg = Color.FromArgb(22, 17, 40);
+            if (Parent is CardPanel cp)
+            {
+                parentBg = cp.BackgroundColor;
+            }
+            else if (Parent != null && Parent.BackColor != Color.Transparent)
+            {
+                parentBg = Parent.BackColor;
+            }
+
+            using (var clearBrush = new SolidBrush(parentBg))
+            {
+                g.FillRectangle(clearBrush, ClientRectangle);
+            }
+
+            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+            using var path = GraphicsUtils.CreateRoundedRectangle(rect, BorderRadius);
+
+            // Fill background
+            using (var brush = new SolidBrush(_isHovered ? FillHoverColor : FillColor))
+            {
+                g.FillPath(brush, path);
+            }
+
+            // Draw border
+            using (var pen = new Pen(_isHovered ? BorderHoverColor : BorderColor, 1.2f))
+            {
+                g.DrawPath(pen, path);
+            }
+
+            // Draw text
+            string text = SelectedText;
+            var textRect = new Rectangle(8, 0, Width - 24, Height);
+            var sf = new StringFormat
+            {
+                Alignment = StringAlignment.Near,
+                LineAlignment = StringAlignment.Center,
+                FormatFlags = StringFormatFlags.NoWrap
+            };
+            using (var textBrush = new SolidBrush(ForeColor))
+            {
+                g.DrawString(text, Font, textBrush, textRect, sf);
+            }
+
+            // Draw clean dropdown triangle arrow
+            int arrowX = Width - 12;
+            int arrowY = Height / 2 - 1;
+            Point[] arrowPoints = new Point[]
+            {
+                new Point(arrowX - 4, arrowY - 2),
+                new Point(arrowX + 4, arrowY - 2),
+                new Point(arrowX, arrowY + 3)
+            };
+            using (var arrowBrush = new SolidBrush(_isHovered ? Theme.TextWhite : ArrowColor))
+            {
+                g.FillPolygon(arrowBrush, arrowPoints);
+            }
+        }
+    }
 }

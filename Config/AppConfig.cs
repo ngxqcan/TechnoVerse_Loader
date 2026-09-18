@@ -14,6 +14,23 @@ namespace TechnoVerseLoader.Config
         public bool RememberKey { get; set; } = true;
         public bool AutoCloseOnLaunch { get; set; } = false;
         public string SecurityWebhookUrl { get; set; } = "https://discord.com/api/webhooks/1548193737673416755/3Rv-ei09agoUneJSpW5McGxQj9l_vrV6i50zH9pfY7EnyxvPPYvgEHx_SNMM5el5XgD6";
+        public System.Collections.Generic.Dictionary<string, int> ProductOptions { get; set; } = new();
+
+        public int GetProductOption(string key, int defaultValue = 1)
+        {
+            if (ProductOptions != null && ProductOptions.TryGetValue(key, out int opt) && opt >= 1 && opt <= 3)
+            {
+                return opt;
+            }
+            return defaultValue;
+        }
+
+        public void SetProductOption(string key, int option)
+        {
+            ProductOptions ??= new();
+            ProductOptions[key] = option;
+            Save();
+        }
 
         private static readonly string ConfigDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

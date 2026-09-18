@@ -548,6 +548,9 @@ namespace TechnoVerseLoader.UI
                 if ((o.Payload == null) != (n.Payload == null)) return true;
                 if (o.Payload?.Sha256 != n.Payload?.Sha256) return true;
                 if (o.Payload?.FileName != n.Payload?.FileName) return true;
+                if ((o.PayloadOption2 == null) != (n.PayloadOption2 == null)) return true;
+                if (o.PayloadOption2?.Sha256 != n.PayloadOption2?.Sha256) return true;
+                if (o.PayloadOption2?.FileName != n.PayloadOption2?.FileName) return true;
             }
             return false;
         }
@@ -738,9 +741,12 @@ namespace TechnoVerseLoader.UI
 
                 bool isUnactivated = item.CanActivate || item.Status == "unactivated";
 
+                bool isInternalVip = string.Equals(p.Key, "internal-vip", StringComparison.OrdinalIgnoreCase);
+                bool showOptionSelector = isInternalVip && !isUnactivated && item.Status != "hwid_mismatch";
+
                 var card = new CardPanel
                 {
-                    Size = new Size(508, 72),
+                    Size = new Size(508, showOptionSelector ? 90 : 72),
                     BackgroundColor = isUnactivated ? Color.FromArgb(30, 22, 52) : Color.FromArgb(22, 17, 40),
                     BorderColor = isUnactivated ? Theme.BorderActive : Theme.Border,
                     BorderRadius = 8,
@@ -755,7 +761,7 @@ namespace TechnoVerseLoader.UI
                     Font = Theme.HeaderFont,
                     ForeColor = Theme.TextWhite,
                     AutoSize = true,
-                    Location = new Point(14, 9)
+                    Location = new Point(14, 8)
                 };
 
                 string subText = item.Subscription?.IsLifetime == true
@@ -769,22 +775,14 @@ namespace TechnoVerseLoader.UI
                     Font = Theme.SmallFont,
                     ForeColor = Theme.TextGray,
                     AutoSize = true,
-                    Location = new Point(14, 30)
+                    Location = new Point(14, 28)
                 };
 
                 var lblStatusTag = new Label
                 {
                     Font = new Font("Segoe UI", 8.2F, FontStyle.Bold),
                     AutoSize = true,
-                    Location = new Point(14, 50)
-                };
-
-                var btnAction = new CyberButton
-                {
-                    Size = new Size(130, 42),
-                    Location = new Point(362, 15),
-                    BorderRadius = 7,
-                    Font = new Font("Segoe UI", 9.5F, FontStyle.Bold)
+                    Location = new Point(14, 46)
                 };
 
                 var curItem = item;
@@ -794,10 +792,17 @@ namespace TechnoVerseLoader.UI
                     lblStatusTag.Text = "Chưa kích hoạt (Bấm Activate)";
                     lblStatusTag.ForeColor = Theme.Yellow;
 
-                    btnAction.Text = "Activate";
-                    btnAction.NormalColor = Theme.BorderActive;
-                    btnAction.HoverColor = Color.FromArgb(147, 51, 234);
-                    btnAction.PressedColor = Color.FromArgb(126, 34, 206);
+                    var btnAction = new CyberButton
+                    {
+                        Size = new Size(130, 42),
+                        Location = new Point(362, 15),
+                        BorderRadius = 7,
+                        Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                        Text = "Activate",
+                        NormalColor = Theme.BorderActive,
+                        HoverColor = Color.FromArgb(147, 51, 234),
+                        PressedColor = Color.FromArgb(126, 34, 206)
+                    };
 
                     btnAction.Click += async (s, e) =>
                     {
@@ -830,16 +835,26 @@ namespace TechnoVerseLoader.UI
                             }
                         }
                     };
+
+                    card.Controls.AddRange(new Control[] { lblTitle, lblSub, lblStatusTag, btnAction });
                 }
                 else if (item.Status == "hwid_mismatch")
                 {
                     lblStatusTag.Text = "Lệch thiết bị (HWID)";
                     lblStatusTag.ForeColor = Theme.Red;
 
-                    btnAction.Text = "Reset trên Bot";
-                    btnAction.NormalColor = Color.FromArgb(45, 20, 30);
-                    btnAction.HoverColor = Theme.Red;
-                    btnAction.BorderLineColor = Theme.Red;
+                    var btnAction = new CyberButton
+                    {
+                        Size = new Size(130, 42),
+                        Location = new Point(362, 15),
+                        BorderRadius = 7,
+                        Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                        Text = "Reset trên Bot",
+                        NormalColor = Color.FromArgb(45, 20, 30),
+                        HoverColor = Theme.Red,
+                        BorderLineColor = Theme.Red
+                    };
+
                     btnAction.Click += (s, e) =>
                     {
                         var confirm = MessageBox.Show(
@@ -863,6 +878,8 @@ namespace TechnoVerseLoader.UI
                             }
                         }
                     };
+
+                    card.Controls.AddRange(new Control[] { lblTitle, lblSub, lblStatusTag, btnAction });
                 }
                 else
                 {
@@ -883,14 +900,54 @@ namespace TechnoVerseLoader.UI
                         lblStatusTag.ForeColor = Theme.Green;
                     }
 
-                    btnAction.Text = "Launch";
-                    btnAction.NormalColor = Theme.Primary;
-                    btnAction.HoverColor = Theme.PrimaryHover;
-                    btnAction.PressedColor = Theme.PrimaryActive;
-                    btnAction.Click += async (s, e) => await HandleLoadPurchasedItemAsync(curItem, btnAction);
+                    int selectedOption = 1;
+
+                    // Giữ nguyên nút Launch truyền thống ở bên phải
+                    var btnAction = new CyberButton
+                    {
+                        Size = new Size(130, 42),
+                        Location = new Point(362, showOptionSelector ? 24 : 15),
+                        BorderRadius = 7,
+                        Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+                        Text = "Launch",
+                        NormalColor = Theme.Primary,
+                        HoverColor = Theme.PrimaryHover,
+                        PressedColor = Theme.PrimaryActive
+                    };
+                    btnAction.Click += async (s, e) => await HandleLoadPurchasedItemAsync(curItem, btnAction, selectedOption);
+
+                    var cardControls = new List<Control> { lblTitle, lblSub, lblStatusTag, btnAction };
+
+                    // Ô option nhỏ ở góc trái phía dưới
+                    if (showOptionSelector)
+                    {
+                        var cmbOption = new CyberDropdown
+                        {
+                            Location = new Point(14, 62),
+                            Size = new Size(100, 24)
+                        };
+
+                        cmbOption.Items.Add("Option 1");
+                        cmbOption.Items.Add("Option 2");
+                        cmbOption.Items.Add("Option 3");
+
+                        // Tự động load config option đã chọn trước đó
+                        int savedOpt = _config.GetProductOption(p.Key, 1);
+                        selectedOption = savedOpt;
+                        cmbOption.SelectedIndex = Math.Clamp(savedOpt - 1, 0, 2);
+
+                        cmbOption.SelectedIndexChanged += (s, e) =>
+                        {
+                            selectedOption = cmbOption.SelectedIndex + 1;
+                            _config.SetProductOption(p.Key, selectedOption);
+                        };
+
+                        cardControls.Add(cmbOption);
+                    }
+
+                    card.Controls.AddRange(cardControls.ToArray());
                 }
 
-                card.Controls.AddRange(new Control[] { lblTitle, lblSub, lblStatusTag, btnAction });
                 _flpProducts.Controls.Add(card);
             }
         }
@@ -903,9 +960,19 @@ namespace TechnoVerseLoader.UI
             return clean.Substring(0, 8) + "-****-" + clean.Substring(clean.Length - 4);
         }
 
-        private async Task HandleLoadPurchasedItemAsync(PurchasedProductItem item, CyberButton btnLoad)
+        private static string TruncateName(string name, int maxLen)
         {
-            if (item.Payload == null || string.IsNullOrWhiteSpace(item.Payload.DownloadUrl))
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            if (name.Length <= maxLen) return name;
+            return name.Substring(0, maxLen - 2) + "..";
+        }
+
+        private async Task HandleLoadPurchasedItemAsync(PurchasedProductItem item, CyberButton btnLoad, int optionIndex = 1)
+        {
+            var targetPayload = (optionIndex == 3) ? item.PayloadOption3 : ((optionIndex == 2) ? item.PayloadOption2 : item.Payload);
+            string defaultBtnText = "Launch";
+
+            if (targetPayload == null || string.IsNullOrWhiteSpace(targetPayload.DownloadUrl))
             {
                 btnLoad.Enabled = false;
                 btnLoad.Text = "Checking...";
@@ -915,22 +982,23 @@ namespace TechnoVerseLoader.UI
                     if (refreshed.Success && refreshed.Products != null)
                     {
                         var match = refreshed.Products.Find(x => x.Key == item.Key);
-                        if (match?.Payload != null && !string.IsNullOrWhiteSpace(match.Payload.DownloadUrl))
+                        if (match != null)
                         {
                             item = match;
                             _authData = refreshed;
+                            targetPayload = (optionIndex == 3) ? item.PayloadOption3 : ((optionIndex == 2) ? item.PayloadOption2 : item.Payload);
                         }
                     }
                 }
                 catch { }
             }
 
-            if (item.Payload == null || string.IsNullOrWhiteSpace(item.Payload.DownloadUrl))
+            if (targetPayload == null || string.IsNullOrWhiteSpace(targetPayload.DownloadUrl))
             {
                 btnLoad.Enabled = true;
-                btnLoad.Text = "Launch";
+                btnLoad.Text = defaultBtnText;
                 MessageBox.Show(
-                    $"No download file available on server for '{item.Product?.Name}'.\nPlease ensure a payload file is uploaded on the admin panel.",
+                    $"No download file available on server for '{item.Product?.Name}' (Option {optionIndex}).\nPlease ensure a payload file is uploaded on the admin panel.",
                     "Notice",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning
@@ -944,6 +1012,7 @@ namespace TechnoVerseLoader.UI
                            btnLoad.Text.Contains("Injected", StringComparison.OrdinalIgnoreCase);
 
             string prodKey = item.Product?.Key ?? item.Key;
+            string downloadKey = prodKey + (optionIndex > 1 ? $"_opt{optionIndex}" : "");
             bool isEmulator = string.Equals(prodKey, "emulator-restart", StringComparison.OrdinalIgnoreCase) ||
                               string.Equals(prodKey, "emulator-no-restart", StringComparison.OrdinalIgnoreCase);
 
@@ -968,15 +1037,15 @@ namespace TechnoVerseLoader.UI
 
             try
             {
-                string expectedSha = item.Payload.Sha256 ?? "";
+                string expectedSha = targetPayload.Sha256 ?? "";
                 string downloadedPath = await _downloadService.DownloadPayloadAsync(
-                    item.Payload.DownloadUrl,
-                    prodKey,
-                    item.Payload.FileName,
+                    targetPayload.DownloadUrl,
+                    downloadKey,
+                    targetPayload.FileName,
                     expectedSha,
                     progress,
                     _downloadCts.Token,
-                    item.Payload.Password
+                    targetPayload.Password
                 );
 
                 string ext = Path.GetExtension(downloadedPath).ToLowerInvariant();
@@ -1081,7 +1150,7 @@ namespace TechnoVerseLoader.UI
             catch (Exception ex)
             {
                 MessageBox.Show("Failed to launch: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnLoad.Text = "Launch";
+                btnLoad.Text = defaultBtnText;
                 btnLoad.NormalColor = Theme.Primary;
                 btnLoad.HoverColor = Theme.PrimaryHover;
             }

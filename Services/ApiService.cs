@@ -57,6 +57,9 @@ namespace TechnoVerseLoader.Services
 
         [JsonPropertyName("password")]
         public string? Password { get; set; }
+
+        [JsonPropertyName("originalFileName")]
+        public string? OriginalFileName { get; set; }
     }
 
     public class AuthResponse
@@ -78,6 +81,12 @@ namespace TechnoVerseLoader.Services
 
         [JsonPropertyName("payload")]
         public PayloadInfo? Payload { get; set; }
+
+        [JsonPropertyName("payloadOption2")]
+        public PayloadInfo? PayloadOption2 { get; set; }
+
+        [JsonPropertyName("payloadOption3")]
+        public PayloadInfo? PayloadOption3 { get; set; }
 
         [JsonPropertyName("boundHwid")]
         public string? BoundHwid { get; set; }
@@ -117,6 +126,12 @@ namespace TechnoVerseLoader.Services
 
         [JsonPropertyName("payload")]
         public PayloadInfo? Payload { get; set; }
+
+        [JsonPropertyName("payloadOption2")]
+        public PayloadInfo? PayloadOption2 { get; set; }
+
+        [JsonPropertyName("payloadOption3")]
+        public PayloadInfo? PayloadOption3 { get; set; }
     }
 
     public class DiscordAuthResponse
