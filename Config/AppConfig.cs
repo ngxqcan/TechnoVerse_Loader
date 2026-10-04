@@ -6,7 +6,7 @@ namespace TechnoVerseLoader.Config
 {
     public class AppConfig
     {
-        public const string DefaultProductionUrl = "https://technoverse-backend-production.up.railway.app";
+        public const string DefaultProductionUrl = "https://tutu-rind-falcon.ngrok-free.dev";
         public string ServerUrl { get => DefaultProductionUrl; set { } }
         public string SavedKey { get; set; } = "";
         public string SavedDiscordId { get; set; } = "";

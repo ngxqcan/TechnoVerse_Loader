@@ -603,7 +603,7 @@ namespace TechnoVerseLoader.UI
                 _localHttpListener.Prefixes.Add($"http://127.0.0.1:{port}/callback/");
                 _localHttpListener.Start();
 
-                string oauthUrl = $"https://technoverse-backend-production.up.railway.app/api/loader/discord/oauth?port={port}";
+                string oauthUrl = $"https://tutu-rind-falcon.ngrok-free.dev/api/loader/discord/oauth?port={port}";
                 Process.Start(new ProcessStartInfo(oauthUrl) { UseShellExecute = true });
 
                 _lblStatusMsg.Text = "Please click 'Authorize' in your browser...";

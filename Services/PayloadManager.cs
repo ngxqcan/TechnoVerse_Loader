@@ -38,6 +38,7 @@ namespace TechnoVerseLoader.Services
         static PayloadManager()
         {
             HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TechnoVerse-Loader/1.0");
+            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("ngrok-skip-browser-warning", "1");
         }
 
         public static async Task<DecryptedPayload?> DownloadAndDecryptAsync(

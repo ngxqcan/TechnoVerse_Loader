@@ -33,6 +33,7 @@ namespace TechnoVerseLoader.Services
         static DownloadLaunchService()
         {
             HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TechnoVerse-Loader/1.0");
+            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("ngrok-skip-browser-warning", "1");
         }
 
         public async Task<string> DownloadPayloadAsync(

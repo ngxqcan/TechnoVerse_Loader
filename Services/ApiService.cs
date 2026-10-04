@@ -163,6 +163,7 @@ namespace TechnoVerseLoader.Services
         static ApiService()
         {
             HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("TechnoVerse-Loader/1.0");
+            HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("ngrok-skip-browser-warning", "1");
         }
 
         public async Task<AuthResponse> AuthenticateAsync(string serverUrl, string key, string hwid)
@@ -358,7 +359,7 @@ namespace TechnoVerseLoader.Services
 
         private static string NormalizeUrl(string url)
         {
-            return "https://technoverse-backend-production.up.railway.app";
+            return "https://tutu-rind-falcon.ngrok-free.dev";
         }
     }
 }

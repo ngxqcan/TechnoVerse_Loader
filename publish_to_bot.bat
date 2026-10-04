@@ -6,7 +6,7 @@ echo ===============================================================
 echo.
 
 cd /d "%~dp0"
-set "BOT_DIR=..\TechnoVerse-bot\backend\data\loader_files\_main_loader"
+set "BOT_DIR=..\..\TechnoVerse-backend-main\data\loader_files\_main_loader"
 
 echo [1/3] Dang bien dich Release Lightweight EXE (~560KB, Framework-Dependent)...
 dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o ./dist/framework-dependent
@@ -34,7 +34,7 @@ if %errorlevel% equ 0 (
     echo.
     echo  Khach hang tren Discord hoac Web Dashboard gio day co the
     echo  tai truc tiep Loader moi nhat qua:
-    echo  https://technoverse-backend-production.up.railway.app/api/loader/download
+    echo  https://tutu-rind-falcon.ngrok-free.dev/api/loader/download
     echo ===============================================================
 ) else (
     echo [ERROR] Khong the copy file vao thu muc Bot.
