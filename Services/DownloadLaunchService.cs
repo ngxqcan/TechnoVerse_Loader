@@ -438,12 +438,33 @@ namespace TechnoVerseLoader.Services
 
                 ZipFile.ExtractToDirectory(filePath, extractFolder, true);
 
+                // Xóa file zip gốc trước khi chạy file khởi động (start.bat / exe)
+                try
+                {
+                    if (File.Exists(filePath))
+                    {
+                        File.SetAttributes(filePath, FileAttributes.Normal);
+                        File.Delete(filePath);
+                    }
+                }
+                catch { }
+
                 // Ưu tiên 1: Tìm start.bat trong thư mục giải nén
                 string startBat = Path.Combine(extractFolder, "start.bat");
+                if (!File.Exists(startBat))
+                {
+                    // Nếu không nằm ngay ở thư mục gốc, tìm start.bat trong các thư mục con
+                    string[] startBatFiles = Directory.GetFiles(extractFolder, "start.bat", SearchOption.AllDirectories);
+                    if (startBatFiles.Length > 0)
+                    {
+                        startBat = startBatFiles[0];
+                    }
+                }
+
                 if (File.Exists(startBat))
                 {
                     executableToRun = startBat;
-                    workingDirectory = extractFolder;
+                    workingDirectory = Path.GetDirectoryName(startBat) ?? extractFolder;
                 }
                 else
                 {
