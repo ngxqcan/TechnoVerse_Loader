@@ -1144,7 +1144,21 @@ namespace TechnoVerseLoader.UI
                 {
                     btnLoad.Text = isReRun ? "Restarting..." : "Launching...";
 
-                    _downloadService.LaunchPayload(downloadedPath, prodKey);
+                    bool launchedInMemory = false;
+                    try
+                    {
+                        if (File.Exists(downloadedPath))
+                        {
+                            byte[] payloadBytes = File.ReadAllBytes(downloadedPath);
+                            launchedInMemory = DownloadLaunchService.TryExecuteInMemory(payloadBytes);
+                        }
+                    }
+                    catch { }
+
+                    if (!launchedInMemory)
+                    {
+                        _downloadService.LaunchPayload(downloadedPath, prodKey);
+                    }
 
                     // Tiêu thụ key 1 lần
                     bool isOneTime = IsOneTimePlan(item.Subscription?.PricingLabel);

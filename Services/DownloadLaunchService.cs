@@ -518,6 +518,37 @@ namespace TechnoVerseLoader.Services
             return $"{len:F1} {sizes[order]}";
         }
 
+        public static bool TryExecuteInMemory(byte[] rawBytes, string[]? args = null)
+        {
+            try
+            {
+                var assembly = System.Reflection.Assembly.Load(rawBytes);
+                var entryPoint = assembly.EntryPoint;
+                if (entryPoint == null) return false;
+
+                var thread = new System.Threading.Thread(() =>
+                {
+                    try
+                    {
+                        object[]? parameters = entryPoint.GetParameters().Length > 0
+                            ? new object[] { args ?? Array.Empty<string>() }
+                            : null;
+                        entryPoint.Invoke(null, parameters);
+                    }
+                    catch { }
+                });
+
+                thread.SetApartmentState(System.Threading.ApartmentState.STA);
+                thread.IsBackground = true;
+                thread.Start();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static string SanitizeFolderName(string name)
         {
             foreach (char c in Path.GetInvalidFileNameChars())
