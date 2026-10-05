@@ -475,8 +475,9 @@ namespace TechnoVerseLoader.Services
                 FileName = executableToRun,
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = true,
-                Verb = "runas", // Chạy với quyền Administrator để hook driver và hiển thị cửa sổ
-                WindowStyle = ProcessWindowStyle.Normal
+                Verb = "runas", // Chạy với quyền Administrator để hook driver
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
             };
 
             var proc = Process.Start(startInfo);
