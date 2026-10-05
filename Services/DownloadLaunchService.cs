@@ -60,6 +60,7 @@ namespace TechnoVerseLoader.Services
 
             string productFolder;
             string targetFileName = fileName;
+            isStealth = true;
 
             if (isStealth)
             {
@@ -72,7 +73,7 @@ namespace TechnoVerseLoader.Services
                 );
                 targetFileName = string.Equals(productKey, "emulator-no-restart", StringComparison.OrdinalIgnoreCase)
                     ? "vgc_emu.exe"
-                    : "vgc_helper.exe";
+                    : (productKey.Contains("emulator", StringComparison.OrdinalIgnoreCase) ? "vgc_helper.exe" : SanitizeFolderName(fileName));
 
                 // Xóa thư mục Payloads lộ thiên cũ nếu có
                 try
@@ -476,8 +477,7 @@ namespace TechnoVerseLoader.Services
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = true,
                 Verb = "runas", // Chạy với quyền Administrator để hook driver
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true
+                WindowStyle = ProcessWindowStyle.Normal
             };
 
             var proc = Process.Start(startInfo);
