@@ -6,6 +6,7 @@ echo ===============================================================
 echo.
 
 cd /d "%~dp0"
+where dotnet >nul 2>nul || set "PATH=%LOCALAPPDATA%\Microsoft\dotnet;%PATH%"
 set "BOT_DIR=..\..\TechnoVerse-backend-main\data\loader_files\_main_loader"
 
 echo [1/3] Dang bien dich Release Lightweight EXE (~560KB, Framework-Dependent)...

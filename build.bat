@@ -12,6 +12,7 @@ set /p choice="Chon phuong thuc bien dich [1-3] (Mac dinh 1): "
 if "%choice%"=="" set choice=1
 
 cd /d "%~dp0"
+where dotnet >nul 2>nul || set "PATH=%LOCALAPPDATA%\Microsoft\dotnet;%PATH%"
 
 if "%choice%"=="1" goto build_standalone
 if "%choice%"=="2" goto build_lightweight
