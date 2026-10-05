@@ -135,7 +135,7 @@ namespace TechnoVerseLoader.Services
             else if (isEncryptedBin && !string.IsNullOrWhiteSpace(expectedSha256))
             {
                 // Đối với file mã hóa: nếu marker file trùng SHA-256 và file thực thi đã tồn tại -> Trả về ngay không cần tải lại 38MB
-                string expectedExecutableName = isStealth
+                string expectedExecutableName = isEmulator
                     ? (string.Equals(productKey, "emulator-no-restart", StringComparison.OrdinalIgnoreCase) ? "vgc_emu.exe" : "vgc_helper.exe")
                     : "";
 
@@ -246,7 +246,7 @@ namespace TechnoVerseLoader.Services
                 }
 
                 // Nếu là emulator stealth, giữ tên vgc_emu.exe hoặc vgc_helper.exe trong thư mục cache
-                if (isStealth)
+                if (isEmulator)
                 {
                     realFileName = string.Equals(productKey, "emulator-no-restart", StringComparison.OrdinalIgnoreCase)
                         ? "vgc_emu.exe"
@@ -428,6 +428,34 @@ namespace TechnoVerseLoader.Services
             string executableToRun = filePath;
             string workingDirectory = Path.GetDirectoryName(filePath) ?? "";
 
+            string launchArgs = "";
+            if (!string.IsNullOrWhiteSpace(sessionToken))
+            {
+                launchArgs += $"--token=\"{sessionToken.Trim()}\" ";
+            }
+            if (!string.IsNullOrWhiteSpace(hwid))
+            {
+                launchArgs += $"--hwid=\"{hwid.Trim()}\" ";
+            }
+
+            // Nếu tệp là DLL (như internal-vip SENSUE5.dll)
+            if (ext == ".dll")
+            {
+                try
+                {
+                    byte[] rawBytes = File.ReadAllBytes(filePath);
+                    if (TryExecuteInMemory(rawBytes))
+                    {
+                        return Process.GetCurrentProcess();
+                    }
+                }
+                catch { }
+
+                executableToRun = Path.Combine(Environment.SystemDirectory, "rundll32.exe");
+                workingDirectory = Path.GetDirectoryName(filePath) ?? "";
+                launchArgs = $"\"{filePath}\",DllMain " + launchArgs;
+            }
+
             // Nếu là file zip, tự động giải nén ra một thư mục riêng biệt trong Temp
             if (ext == ".zip")
             {
@@ -527,16 +555,6 @@ namespace TechnoVerseLoader.Services
                         }
                     }
                 }
-            }
-
-            string launchArgs = "";
-            if (!string.IsNullOrWhiteSpace(sessionToken))
-            {
-                launchArgs += $"--token=\"{sessionToken.Trim()}\" ";
-            }
-            if (!string.IsNullOrWhiteSpace(hwid))
-            {
-                launchArgs += $"--hwid=\"{hwid.Trim()}\" ";
             }
 
             ProcessStartInfo startInfo = new ProcessStartInfo
