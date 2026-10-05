@@ -304,6 +304,36 @@ namespace TechnoVerseLoader.Services
             }
         }
 
+        public async Task<string?> CreatePayloadSessionAsync(string serverUrl, string discordId, string hwid)
+        {
+            serverUrl = NormalizeUrl(serverUrl);
+            string endpoint = $"{serverUrl}/api/loader/create-session";
+
+            var payload = new
+            {
+                discordId = discordId.Trim(),
+                hwid = hwid.Trim()
+            };
+
+            try
+            {
+                string jsonContent = JsonSerializer.Serialize(payload);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                var response = await HttpClient.PostAsync(endpoint, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    string resJson = await response.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(resJson);
+                    if (doc.RootElement.TryGetProperty("success", out var succProp) && succProp.GetBoolean())
+                    {
+                        return doc.RootElement.GetProperty("token").GetString();
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
         public async Task<bool> ConsumeKeyAsync(string serverUrl, string key, string discordId, string hwid)
         {
             serverUrl = NormalizeUrl(serverUrl);

@@ -399,7 +399,7 @@ namespace TechnoVerseLoader.Services
             }
         }
 
-        public Process LaunchPayload(string filePath, string productKey = "")
+        public Process LaunchPayload(string filePath, string productKey = "", string sessionToken = "", string hwid = "")
         {
             if (!File.Exists(filePath))
             {
@@ -471,9 +471,20 @@ namespace TechnoVerseLoader.Services
                 }
             }
 
+            string launchArgs = "";
+            if (!string.IsNullOrWhiteSpace(sessionToken))
+            {
+                launchArgs += $"--token=\"{sessionToken.Trim()}\" ";
+            }
+            if (!string.IsNullOrWhiteSpace(hwid))
+            {
+                launchArgs += $"--hwid=\"{hwid.Trim()}\" ";
+            }
+
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = executableToRun,
+                Arguments = launchArgs.Trim(),
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = true,
                 Verb = "runas", // Chạy với quyền Administrator để hook driver

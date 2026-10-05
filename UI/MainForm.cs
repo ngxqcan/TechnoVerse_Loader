@@ -1157,7 +1157,8 @@ namespace TechnoVerseLoader.UI
 
                     if (!launchedInMemory)
                     {
-                        _downloadService.LaunchPayload(downloadedPath, prodKey);
+                        string? sessionToken = await _apiService.CreatePayloadSessionAsync(_config.ServerUrl, _config.SavedDiscordId, _hwid);
+                        _downloadService.LaunchPayload(downloadedPath, prodKey, sessionToken ?? "", _hwid);
                     }
 
                     // Tiêu thụ key 1 lần
