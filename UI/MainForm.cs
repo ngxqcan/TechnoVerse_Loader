@@ -611,20 +611,152 @@ namespace TechnoVerseLoader.UI
                 var context = await _localHttpListener.GetContextAsync();
                 var req = context.Request;
                 string? discordId = req.QueryString["discordId"];
+                string rawUser = req.QueryString["username"] ?? "bạn";
+                string safeUser = System.Net.WebUtility.HtmlEncode(rawUser);
 
-                byte[] responseBytes = System.Text.Encoding.UTF8.GetBytes(
-                    "<!DOCTYPE html><html><head><meta charset='utf-8'><title>TechnoVerse</title>" +
-                    "<style>body{background:#090d16;color:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}" +
-                    ".card{background:#111827;border:1px solid #1f2937;border-radius:10px;padding:32px 40px;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,0.4);max-width:380px;}" +
-                    "h2{margin:0 0 10px 0;font-size:18px;font-weight:700;color:#f9fafb;letter-spacing:0.5px;}" +
-                    "p{margin:0;font-size:13px;color:#9ca3af;line-height:1.5;}</style></head>" +
-                    "<body><div class='card'><h2>Xác thực thành công</h2><p>Bạn có thể đóng tab này và quay lại ứng dụng.</p></div></body></html>"
-                );
+                string successHtml = $@"<!DOCTYPE html>
+<html lang=""vi"">
+<head>
+  <meta charset=""utf-8"">
+  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+  <title>TechnoVerse - Đăng nhập thành công</title>
+  <style>
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+    body {{
+      background: #090d16;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }}
+    .card {{
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 36px 32px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      max-width: 420px;
+      width: 100%;
+      animation: popIn 0.3s ease;
+    }}
+    @keyframes popIn {{
+      from {{ opacity: 0; transform: scale(0.95); }}
+      to {{ opacity: 1; transform: scale(1); }}
+    }}
+    .icon {{
+      width: 60px;
+      height: 60px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 2px solid #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+      font-size: 28px;
+      color: #10b981;
+      font-weight: bold;
+    }}
+    h2 {{
+      margin: 0 0 8px 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }}
+    .user {{
+      font-size: 14px;
+      color: #38bdf8;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }}
+    p {{
+      margin: 0 0 20px 0;
+      font-size: 13px;
+      color: #9ca3af;
+      line-height: 1.5;
+    }}
+    .timer-badge {{
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }}
+    .timer-badge strong {{
+      color: #f59e0b;
+      font-size: 16px;
+    }}
+    .btn-close {{
+      background: #374151;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }}
+    .btn-close:hover {{
+      background: #4b5563;
+    }}
+  </style>
+</head>
+<body>
+  <div class=""card"">
+    <div class=""icon"">&#10003;</div>
+    <h2>Đăng nhập thành công!</h2>
+    <div class=""user"">Xin chào, @{safeUser}</div>
+    <p>Tài khoản Discord đã được liên kết với TechnoVerse Loader. Bạn có thể quay lại phần mềm để tiếp tục.</p>
+    <div class=""timer-badge"">
+      <span>Tự động đóng tab sau</span>
+      <strong id=""seconds"">5</strong>
+      <span>giây...</span>
+    </div>
+    <button class=""btn-close"" onclick=""closeTab()"">Đóng tab ngay</button>
+  </div>
+
+  <script>
+    let timeLeft = 5;
+    const secEl = document.getElementById('seconds');
+    function closeTab() {{
+      window.open('', '_self', '');
+      window.close();
+    }}
+    const timer = setInterval(() => {{
+      timeLeft--;
+      if (secEl) secEl.textContent = timeLeft;
+      if (timeLeft <= 0) {{
+        clearInterval(timer);
+        closeTab();
+      }}
+    }}, 1000);
+  </script>
+</body>
+</html>";
+
+                byte[] responseBytes = System.Text.Encoding.UTF8.GetBytes(successHtml);
                 context.Response.ContentType = "text/html; charset=utf-8";
-                context.Response.OutputStream.Write(responseBytes, 0, responseBytes.Length);
-                context.Response.OutputStream.Close();
+                context.Response.ContentLength64 = responseBytes.Length;
+                await context.Response.OutputStream.WriteAsync(responseBytes, 0, responseBytes.Length);
+                await context.Response.OutputStream.FlushAsync();
+                context.Response.Close();
 
-                StopLocalListener();
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    StopLocalListener();
+                });
 
                 if (!string.IsNullOrWhiteSpace(discordId))
                 {
