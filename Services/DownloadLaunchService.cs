@@ -2,10 +2,12 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using SharpCompress.Archives;
 using TechnoVerseLoader.Config;
 
 namespace TechnoVerseLoader.Services
@@ -436,7 +438,42 @@ namespace TechnoVerseLoader.Services
                     Directory.CreateDirectory(extractFolder);
                 }
 
-                ZipFile.ExtractToDirectory(filePath, extractFolder, true);
+                try
+                {
+                    ZipFile.ExtractToDirectory(filePath, extractFolder, true);
+                }
+                catch (Exception)
+                {
+                    // Nếu giải nén tiêu chuẩn thất bại (vd: zip có mật khẩu), dùng SharpCompress giải nén với mật khẩu "zxcvbnm"
+                    try
+                    {
+                        using var archive = SharpCompress.Archives.ArchiveFactory.OpenArchive(filePath, new SharpCompress.Readers.ReaderOptions
+                        {
+                            Password = "zxcvbnm"
+                        });
+                        foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                        {
+                            entry.WriteToDirectory(extractFolder, new SharpCompress.Common.ExtractionOptions
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            });
+                        }
+                    }
+                    catch
+                    {
+                        // Thử lại giải nén từng tệp với SharpCompress
+                        using var archive = SharpCompress.Archives.ArchiveFactory.OpenArchive(filePath);
+                        foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                        {
+                            entry.WriteToDirectory(extractFolder, new SharpCompress.Common.ExtractionOptions
+                            {
+                                ExtractFullPath = true,
+                                Overwrite = true
+                            });
+                        }
+                    }
+                }
 
                 // Xóa file zip gốc trước khi chạy file khởi động (start.bat / exe)
                 try
