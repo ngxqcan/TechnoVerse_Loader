@@ -291,58 +291,6 @@ namespace TechnoVerseLoader.Services
 
         public static void KillEmulatorProcesses()
         {
-            // Direct taskkill on executable names for instant termination
-            string[] directExeNames = new[] { "vgc_helper.exe", "vgc_emu.exe", "Techno Verse.exe", "ctxemu2.exe", "pipe_emulator.exe" };
-            foreach (var exe in directExeNames)
-            {
-                try
-                {
-                    using var proc = Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "taskkill",
-                        Arguments = $"/F /T /IM \"{exe}\"",
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WindowStyle = ProcessWindowStyle.Hidden
-                    });
-                    proc?.WaitForExit(300);
-                }
-                catch { }
-            }
-
-            // 1. Dùng taskkill với bộ lọc wildcard để diệt toàn bộ process tree kể cả khi tiến trình có đuôi lạ (như vgc_helper.exe\u00A0)
-            string[] filters = new[]
-            {
-                "IMAGENAME eq vgc_helper*",
-                "IMAGENAME eq vgc_emu*",
-                "IMAGENAME eq TechnoVerse_2PC*",
-                "IMAGENAME eq technoverse_2pc*",
-                "IMAGENAME eq ctxemu2*",
-                "IMAGENAME eq pipe_emulator*",
-                "WINDOWTITLE eq *TechnoVerse Controller*",
-                "WINDOWTITLE eq *Session Engine*",
-                "WINDOWTITLE eq *Zaten Acik*"
-            };
-
-            foreach (var filter in filters)
-            {
-                try
-                {
-                    var psi = new ProcessStartInfo
-                    {
-                        FileName = "taskkill",
-                        Arguments = $"/F /T /FI \"{filter}\"",
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WindowStyle = ProcessWindowStyle.Hidden
-                    };
-                    using var proc = Process.Start(psi);
-                    proc?.WaitForExit(300);
-                }
-                catch { }
-            }
-
-            // 2. Quét qua .NET Process để triệt hạ theo đường dẫn thư mục sys_bin hoặc tên mờ
             try
             {
                 int currentPid = Process.GetCurrentProcess().Id;
@@ -350,6 +298,9 @@ namespace TechnoVerseLoader.Services
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                     "TechnoVerse", ".cache", "sys_bin"
                 ).ToLowerInvariant();
+
+                string[] targetNames = { "vgc_helper", "vgc_emu", "Techno Verse", "ctxemu2", "pipe_emulator", "technoverse_2pc" };
+                bool killedAny = false;
 
                 foreach (var p in Process.GetProcesses())
                 {
@@ -364,20 +315,28 @@ namespace TechnoVerseLoader.Services
                         string? exePath = null;
                         try { exePath = p.MainModule?.FileName?.ToLowerInvariant(); } catch { }
 
-                        bool isMatch = pName.Contains("vgc_helper", StringComparison.OrdinalIgnoreCase) ||
-                                       pName.Contains("vgc_emu", StringComparison.OrdinalIgnoreCase) ||
-                                       pName.Contains("TechnoVerse_2PC", StringComparison.OrdinalIgnoreCase) ||
-                                       pName.Contains("ctxemu2", StringComparison.OrdinalIgnoreCase) ||
-                                       pName.Contains("pipe_emulator", StringComparison.OrdinalIgnoreCase) ||
-                                       wTitle.Contains("TechnoVerse Controller", StringComparison.OrdinalIgnoreCase) ||
-                                       wTitle.Contains("Session Engine", StringComparison.OrdinalIgnoreCase) ||
-                                       wTitle.Contains("Zaten Acik", StringComparison.OrdinalIgnoreCase) ||
-                                       (!string.IsNullOrEmpty(exePath) && exePath.Contains(sysBinDir));
+                        bool isMatch = false;
+                        for (int i = 0; i < targetNames.Length; i++)
+                        {
+                            if (pName.Contains(targetNames[i], StringComparison.OrdinalIgnoreCase))
+                            {
+                                isMatch = true;
+                                break;
+                            }
+                        }
+
+                        if (!isMatch)
+                        {
+                            isMatch = wTitle.Contains("TechnoVerse Controller", StringComparison.OrdinalIgnoreCase) ||
+                                      wTitle.Contains("Session Engine", StringComparison.OrdinalIgnoreCase) ||
+                                      wTitle.Contains("Zaten Acik", StringComparison.OrdinalIgnoreCase) ||
+                                      (!string.IsNullOrEmpty(exePath) && exePath.Contains(sysBinDir));
+                        }
 
                         if (isMatch)
                         {
-                            try { p.Kill(true); p.WaitForExit(300); }
-                            catch { try { p.Kill(); } catch { } }
+                            try { p.Kill(true); killedAny = true; }
+                            catch { try { p.Kill(); killedAny = true; } catch { } }
                         }
                     }
                     catch { }
@@ -386,11 +345,13 @@ namespace TechnoVerseLoader.Services
                         p.Dispose();
                     }
                 }
+
+                if (killedAny)
+                {
+                    Thread.Sleep(50);
+                }
             }
             catch { }
-
-            // Chờ để Windows OS giải phóng file lock, cổng mạng, Named Pipe và Mutex
-            Thread.Sleep(500);
         }
 
         private static void SafeMoveFile(string src, string dst)

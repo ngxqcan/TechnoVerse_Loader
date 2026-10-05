@@ -1100,7 +1100,6 @@ namespace TechnoVerseLoader.UI
                     try { File.Delete(downloadedPath); } catch { }
 
                     btnLoad.Text = "Injecting...";
-                    await Task.Delay(300);
 
                     if (!CheeseHookLoader.IsTargetRunning())
                     {
@@ -1144,7 +1143,6 @@ namespace TechnoVerseLoader.UI
                 else
                 {
                     btnLoad.Text = isReRun ? "Restarting..." : "Launching...";
-                    await Task.Delay(400);
 
                     _downloadService.LaunchPayload(downloadedPath, prodKey);
 
