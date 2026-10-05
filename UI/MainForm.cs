@@ -718,27 +718,41 @@ namespace TechnoVerseLoader.UI
     <h2>Đăng nhập thành công!</h2>
     <div class=""user"">Xin chào, @{safeUser}</div>
     <p>Tài khoản Discord đã được liên kết với TechnoVerse Loader. Bạn có thể quay lại phần mềm để tiếp tục.</p>
-    <div class=""timer-badge"">
+    <div class=""timer-badge"" id=""timer-badge"">
       <span>Tự động đóng tab sau</span>
       <strong id=""seconds"">5</strong>
       <span>giây...</span>
     </div>
-    <button class=""btn-close"" onclick=""closeTab()"">Đóng tab ngay</button>
+    <button class=""btn-close"" id=""btn-close"" onclick=""tryClose()"">Đóng tab ngay</button>
   </div>
 
   <script>
     let timeLeft = 5;
     const secEl = document.getElementById('seconds');
-    function closeTab() {{
-      window.open('', '_self', '');
-      window.close();
+    const badgeEl = document.getElementById('timer-badge');
+    const btnEl = document.getElementById('btn-close');
+
+    function tryClose() {{
+      try {{ window.close(); }} catch(e) {{}}
+      try {{ self.close(); }} catch(e) {{}}
+      try {{ window.open('', '_self').close(); }} catch(e) {{}}
+
+      setTimeout(() => {{
+        if (badgeEl) {{
+          badgeEl.innerHTML = '<span style=""color:#34d399;font-weight:600;"">&#10003; Đã xác thực! Nhấn </span><kbd style=""background:#374151;padding:2px 6px;border-radius:4px;color:#fff;font-family:monospace;"">Ctrl + W</kbd><span> để đóng tab.</span>';
+        }}
+        if (btnEl) {{
+          btnEl.innerText = 'Đã hoàn tất (Ctrl + W)';
+        }}
+      }}, 500);
     }}
+
     const timer = setInterval(() => {{
       timeLeft--;
       if (secEl) secEl.textContent = timeLeft;
       if (timeLeft <= 0) {{
         clearInterval(timer);
-        closeTab();
+        tryClose();
       }}
     }}, 1000);
   </script>
@@ -760,7 +774,20 @@ namespace TechnoVerseLoader.UI
 
                 if (!string.IsNullOrWhiteSpace(discordId))
                 {
-                    Invoke((MethodInvoker)(async () => await DoDiscordAuthAsync(discordId)));
+                    Invoke((MethodInvoker)(async () =>
+                    {
+                        try
+                        {
+                            WindowState = FormWindowState.Normal;
+                            TopMost = true;
+                            TopMost = false;
+                            Activate();
+                            Focus();
+                        }
+                        catch { }
+
+                        await DoDiscordAuthAsync(discordId);
+                    }));
                 }
                 else
                 {
